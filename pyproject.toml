@@ -6,7 +6,7 @@ authors = ["Derek 'Vlek' McCammond"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 "discord.py" = "^2.4.0"
 
 [tool.poetry.group.dev.dependencies]
