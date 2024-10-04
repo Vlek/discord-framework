@@ -5,7 +5,6 @@ import os
 
 
 def test_discordbot():
-
     bot = DiscordBot()
     logger = logging.getLogger("discord")
     TOKEN = os.getenv("DISCORD_TOKEN") or ""

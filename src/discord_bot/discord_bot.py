@@ -1,10 +1,10 @@
 from discord import Intents
-from discord.ext import commands
+from discord.ext.commands import Bot
 from typing import Callable
 import logging
 
 
-class DiscordBot(commands.Bot):
+class DiscordBot(Bot):
     def __init__(self, intents=None, command_prefix="$") -> None:
         self.messageHandlers: list[Callable] = []
         self.messageDeletedHandlers: list[Callable] = []
@@ -18,7 +18,7 @@ class DiscordBot(commands.Bot):
             intents = Intents.default()
             intents.message_content = True
 
-        super().__init__(command_prefix, intents=intents)
+        super().__init__(command_prefix=command_prefix, intents=intents)
 
     def addMessageHandler(self, handler: Callable) -> bool:
         """Adds given message handler to handlers."""
