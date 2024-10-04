@@ -4,10 +4,12 @@ version = "0.1.0"
 description = "Framework for creating Discord bots"
 authors = ["Derek 'Vlek' McCammond"]
 readme = "README.md"
+packages = [{ include = "discord_bot", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 "discord.py" = "^2.4.0"
+async-timeout = "^4.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
@@ -18,3 +20,9 @@ flake8 = "^7.1.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+combine_star = true
+line_length = 80
