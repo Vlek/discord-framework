@@ -57,6 +57,8 @@ class DiscordBot(Bot):
                 # This _should_ take care of logging the traceback correctly.
                 logging.exception("")
 
+        await self.process_commands(message)
+
     def addMemberJoinHandler(self, handler: Callable) -> bool:
         """Adds given member join handler to handlers."""
         added: bool = False
