@@ -1,10 +1,9 @@
-from dataclasses import MISSING
 import logging
 from random import choice
-from typing import Any, Callable, Type
+from typing import Callable
 
-from discord import Intents, Member, Interaction, Message
-from discord.ext.commands import Bot, Command
+from discord import Intents, Interaction, Member, Message
+from discord.ext.commands import Bot
 
 
 class DiscordBot(Bot):
@@ -39,6 +38,10 @@ class DiscordBot(Bot):
             added = True
 
         return added
+
+    def messageHandler(self, handler) -> None:
+        def decorator() -> None:
+            self.addMessageHandler(handler)
 
     def removeMessageHandler(self, handler: Callable) -> bool:
         """Attempts to remove given handler from handlers."""
@@ -206,32 +209,17 @@ class DiscordBot(Bot):
             except Exception:
                 logging.exception("")
 
-    def commandModeratorOnly(self) -> Callable: ...
+    async def moderatorOnly(self, interaction: Interaction) -> bool:
+        """Sends a message if user is not a mod."""
+        message: Message = interaction.message
+        author: Member = interaction.user
 
-    def requiresMod(
-        self,
-        name: str = MISSING,
-        cls: Type[Command[Any, ..., Any]] = MISSING,
-        *args,
-        **kwargs
-    ) -> Callable:
-        """Adds mod priv requirement to decorated command."""
+        isMod: bool = self.isMod(author)
 
-        async def decorator(handler: Callable):
-            # The context should always be the first argument
-            # when dealing with commands.
-            interaction: Interaction = args[0]
-            message: Message = interaction.message
-            author: Member = interaction.user
+        if not isMod:
+            await message.reply(choice(self.deniedAccessMessages))
 
-            if not self.isMod(author):
-                await message.reply(choice(self.deniedAccessMessages))
-                return
-
-            handler(*args, **kwargs)
-
-        kwargs.setdefault("parent", self)
-        return self.command(name=name, cls=cls, *args, **kwargs)(decorator)
+        return isMod
 
     def isMod(self, member: Member) -> bool:
         """Returns whether given member has a mod role."""
