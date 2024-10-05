@@ -1,7 +1,9 @@
-from discord import Intents
-from discord.ext.commands import Bot
-from typing import Callable
 import logging
+from random import choice
+from typing import Callable
+
+from discord import Context, Intents, Member
+from discord.ext.commands import Bot
 
 
 class DiscordBot(Bot):
@@ -13,6 +15,13 @@ class DiscordBot(Bot):
         self.userBannedHandlers: list[Callable] = []
         self.emojiAddHandlers: list[Callable] = []
         self.emojiRemoveHandlers: list[Callable] = []
+
+        self.modRoles: list[str] = []
+
+        self.deniedAccessMessages: list[str] = [
+            "Only mods can run that command.",
+            "You do not have access to run that command.",
+        ]
 
         if not intents:
             intents = Intents.default()
@@ -195,3 +204,20 @@ class DiscordBot(Bot):
                 await handler(reaction, user)
             except Exception:
                 logging.exception("")
+
+    def requiresMod(self, handler: Callable) -> Callable:
+        """Adds mod priv requirement to decorated command."""
+        def inner(*args, **kwargs):
+            # The context should always be the first argument
+            # when dealing with commands.
+            context: Context = args[0]
+            if context.author:
+                context.reply(choice(self.deniedAccessMessages))
+
+            handler(*args, **kwargs)
+
+        return inner
+
+    def isMod(self, member: Member) -> bool:
+        """Returns whether given member has a mod role."""
+        return member.
