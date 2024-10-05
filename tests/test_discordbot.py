@@ -10,9 +10,7 @@ from discord_bot import DiscordBot
 def test_discordbot():
     bot = DiscordBot()
     logger = logging.getLogger("discord")
-    TOKEN = os.getenv("DISCORD_TOKEN")
-
-    print(TOKEN)
+    TOKEN = os.getenv("DISCORD_TOKEN") or ""
 
     @bot.command()
     async def ping(ctx: discord.abc.Messageable):

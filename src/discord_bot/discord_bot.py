@@ -40,8 +40,7 @@ class DiscordBot(Bot):
         return added
 
     def messageHandler(self, handler) -> None:
-        def decorator() -> None:
-            self.addMessageHandler(handler)
+        self.addMessageHandler(handler)
 
     def removeMessageHandler(self, handler: Callable) -> bool:
         """Attempts to remove given handler from handlers."""
