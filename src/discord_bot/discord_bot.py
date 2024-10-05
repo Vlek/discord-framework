@@ -1,9 +1,10 @@
+from dataclasses import MISSING
 import logging
 from random import choice
-from typing import Callable
+from typing import Any, Callable, Type
 
-from discord import Context, Intents, Member
-from discord.ext.commands import Bot
+from discord import Intents, Member, Interaction, Message
+from discord.ext.commands import Bot, Command
 
 
 class DiscordBot(Bot):
@@ -205,19 +206,33 @@ class DiscordBot(Bot):
             except Exception:
                 logging.exception("")
 
-    def requiresMod(self, handler: Callable) -> Callable:
+    def commandModeratorOnly(self) -> Callable: ...
+
+    def requiresMod(
+        self,
+        name: str = MISSING,
+        cls: Type[Command[Any, ..., Any]] = MISSING,
+        *args,
+        **kwargs
+    ) -> Callable:
         """Adds mod priv requirement to decorated command."""
-        def inner(*args, **kwargs):
+
+        async def decorator(handler: Callable):
             # The context should always be the first argument
             # when dealing with commands.
-            context: Context = args[0]
-            if context.author:
-                context.reply(choice(self.deniedAccessMessages))
+            interaction: Interaction = args[0]
+            message: Message = interaction.message
+            author: Member = interaction.user
+
+            if not self.isMod(author):
+                await message.reply(choice(self.deniedAccessMessages))
+                return
 
             handler(*args, **kwargs)
 
-        return inner
+        kwargs.setdefault("parent", self)
+        return self.command(name=name, cls=cls, *args, **kwargs)(decorator)
 
     def isMod(self, member: Member) -> bool:
         """Returns whether given member has a mod role."""
-        return member.
+        return len(set(member.roles) & set(self.modRoles)) > 0
