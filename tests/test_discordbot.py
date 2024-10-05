@@ -4,7 +4,7 @@ import os
 import discord
 import discord.ext
 
-from discord_bot import DiscordBot
+from discord_framework import DiscordBot
 
 
 def test_discordbot():

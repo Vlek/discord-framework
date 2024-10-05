@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "discord-bot"
+name = "discord-framework"
 version = "1.0.0"
 description = "Framework for creating Discord bots"
 authors = ["Derek 'Vlek' McCammond"]
 readme = "README.md"
-packages = [{ include = "discord_bot", from = "src" }]
+packages = [{ include = "discord_framework", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.9"
