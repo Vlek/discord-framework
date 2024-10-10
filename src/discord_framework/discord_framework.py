@@ -23,9 +23,13 @@ class DiscordBot(Bot):
             "You do not have access to run that command.",
         ]
 
+        self.cooldowns: dict[str, int] = {}
+
         if not intents:
             intents = Intents.default()
             intents.message_content = True
+
+        self.logger = logging.getLogger("discord")
 
         super().__init__(command_prefix=command_prefix, intents=intents)
 
@@ -39,8 +43,14 @@ class DiscordBot(Bot):
 
         return added
 
-    def messageHandler(self, handler) -> None:
-        self.addMessageHandler(handler)
+    def messageHandler(self, cooldown: int = 0) -> Callable:
+        def decorator(handler: Callable) -> None:
+            self.addMessageHandler(handler)
+
+            if cooldown:
+                self.cooldowns[handler.__name__] = cooldown
+
+        return decorator
 
     def removeMessageHandler(self, handler: Callable) -> bool:
         """Attempts to remove given handler from handlers."""
@@ -98,6 +108,13 @@ class DiscordBot(Bot):
                 await handler(member)
             except Exception:
                 logging.exception("")
+
+    def memberJoinHandler(self) -> Callable:
+
+        def decorator(handler: Callable) -> None:
+            self.addMemberJoinHandler(handler)
+
+        return decorator
 
     def addMemberBannedHandler(self, handler: Callable) -> bool:
         """Adds given member banned handler to handlers."""
