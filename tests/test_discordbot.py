@@ -3,7 +3,7 @@ import os
 
 import discord
 import discord.ext
-from discord import Message, TextChannel
+from discord import Member, Message, Role, TextChannel
 from discord.ext import commands
 
 from discord_framework import DiscordBot
@@ -24,6 +24,14 @@ def test_discordbot():
     async def poop(ctx):
         logger.info("mod only command called")
         await ctx.send("💩")
+
+    @bot.command()
+    async def buddy(ctx, mbr: Member) -> None:
+        buddyRole: Role = bot.getRole(ctx, "Buddies")
+        generalChannel: TextChannel = bot.getChannel("general")
+
+        await mbr.add_roles(buddyRole)
+        await generalChannel.send(f"Welcome, {mbr.name}!")
 
     @bot.messageHandler(cooldown=5)
     async def logAllMessages(message: discord.Message):

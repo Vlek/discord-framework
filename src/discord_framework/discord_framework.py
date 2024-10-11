@@ -2,8 +2,8 @@ import logging
 from typing import Callable
 
 import discord
-from discord import Intents, TextChannel
-from discord.ext.commands import Bot
+from discord import Intents, Role, TextChannel
+from discord.ext.commands import Bot, Context
 
 
 class DiscordBot(Bot):
@@ -254,3 +254,8 @@ class DiscordBot(Bot):
         )
 
         return channel
+
+    def getRole(self, ctx: Context, roleName: str) -> Role:
+        role: Role = discord.utils.get(ctx.guild.roles, name=roleName)
+
+        return role
