@@ -3,6 +3,7 @@ import os
 
 import discord
 import discord.ext
+from discord import Message
 from discord.ext import commands
 
 from discord_framework import DiscordBot
@@ -34,6 +35,13 @@ def test_discordbot():
         logger.info(f"New member joined! {mbr.nick}")
         channel: discord.Channel = bot.get_channel(1291233677547933801)
         await channel.send(f"Welcome, {mbr.nick}!")
+
+    @bot.messageDeletedHandler()
+    async def logDeletedMessage(msg: Message) -> None:
+        logger.info("User attempted to delete a message!")
+        await msg.channel.send(
+            f"{msg.author.nick} tried to do a dirty delete! What a fag."
+        )
 
     bot.run(TOKEN)
 

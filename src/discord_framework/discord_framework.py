@@ -109,7 +109,6 @@ class DiscordBot(Bot):
                 logging.exception("")
 
     def memberJoinHandler(self) -> Callable:
-
         def decorator(handler: Callable) -> None:
             self.addMemberJoinHandler(handler)
 
@@ -143,6 +142,12 @@ class DiscordBot(Bot):
             except Exception:
                 logging.exception("")
 
+    def memberBannedHandler(self) -> Callable:
+        def decorator(handler: Callable) -> None:
+            self.addMemberBannedHandler(handler)
+
+        return decorator
+
     def addEmojiAddHandler(self, handler) -> bool:
         """Adds given emoji add handler to handlers."""
         added: bool = False
@@ -169,6 +174,12 @@ class DiscordBot(Bot):
                 await handler(reaction, user)
             except Exception:
                 logging.exception("")
+
+    def emojiAddHandler(self) -> Callable:
+        def decorator(handler: Callable) -> Callable:
+            self.addEmojiAddHandler(handler)
+
+        return decorator
 
     def addMessageDeletedHandler(self, handler) -> bool:
         """Adds a message delete handler to handlers."""
@@ -198,6 +209,12 @@ class DiscordBot(Bot):
             except Exception:
                 logging.exception("")
 
+    def messageDeletedHandler(self) -> Callable:
+        def decorator(handler: Callable) -> None:
+            self.addMessageDeletedHandler(handler)
+
+        return decorator
+
     def addEmojiRemoveHandler(self, handler) -> bool:
         """Adds an emoji remove handler to handlers."""
         added: bool = False
@@ -223,3 +240,9 @@ class DiscordBot(Bot):
                 await handler(reaction, user)
             except Exception:
                 logging.exception("")
+
+    def emojiRemoveHandler(self) -> Callable:
+        def decorator(handler: Callable) -> None:
+            self.addEmojiRemoveHandler(handler)
+
+        return decorator
