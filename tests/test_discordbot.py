@@ -3,7 +3,7 @@ import os
 
 import discord
 import discord.ext
-from discord import Message
+from discord import Message, TextChannel
 from discord.ext import commands
 
 from discord_framework import DiscordBot
@@ -39,9 +39,11 @@ def test_discordbot():
     @bot.messageDeletedHandler()
     async def logDeletedMessage(msg: Message) -> None:
         logger.info("User attempted to delete a message!")
-        await msg.channel.send(
-            f"{msg.author.nick} tried to do a dirty delete! What a fag."
-        )
+        await msg.channel.send(f"{msg.author.nick} tried to do a dirty delete!")
+
+        deleteChannel: TextChannel = bot.getChannel("deleted-shit")
+
+        await deleteChannel.send(f"{msg.author.name}: {msg.content}")
 
     bot.run(TOKEN)
 

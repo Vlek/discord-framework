@@ -1,7 +1,8 @@
 import logging
 from typing import Callable
 
-from discord import Intents
+import discord
+from discord import Intents, TextChannel
 from discord.ext.commands import Bot
 
 
@@ -246,3 +247,10 @@ class DiscordBot(Bot):
             self.addEmojiRemoveHandler(handler)
 
         return decorator
+
+    def getChannel(self, channelName: str) -> TextChannel:
+        channel: TextChannel = discord.utils.get(
+            self.get_all_channels(), name=channelName
+        )
+
+        return channel
