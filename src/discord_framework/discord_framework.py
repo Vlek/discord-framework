@@ -1,8 +1,7 @@
 import logging
-from random import choice
 from typing import Callable
 
-from discord import Intents, Interaction, Member, Message
+from discord import Intents
 from discord.ext.commands import Bot
 
 
@@ -224,19 +223,3 @@ class DiscordBot(Bot):
                 await handler(reaction, user)
             except Exception:
                 logging.exception("")
-
-    async def moderatorOnly(self, interaction: Interaction) -> bool:
-        """Sends a message if user is not a mod."""
-        message: Message = interaction.message
-        author: Member = interaction.user
-
-        isMod: bool = self.isMod(author)
-
-        if not isMod:
-            await message.reply(choice(self.deniedAccessMessages))
-
-        return isMod
-
-    def isMod(self, member: Member) -> bool:
-        """Returns whether given member has a mod role."""
-        return len(set(member.roles) & set(self.modRoles)) > 0

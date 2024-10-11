@@ -3,6 +3,7 @@ import os
 
 import discord
 import discord.ext
+from discord.ext import commands
 
 from discord_framework import DiscordBot
 
@@ -16,6 +17,12 @@ def test_discordbot():
     async def ping(ctx: discord.abc.Messageable):
         logger.info("sending pong response to command")
         await ctx.send("pong")
+
+    @bot.command()
+    @commands.has_role("mod")
+    async def poop(ctx):
+        logger.info("mod only command called")
+        await ctx.send("💩")
 
     @bot.messageHandler(cooldown=5)
     async def logAllMessages(message: discord.Message):
