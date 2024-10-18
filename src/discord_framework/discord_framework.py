@@ -1,9 +1,14 @@
 import logging
-from typing import Callable
+from typing import Callable, Any
 
 import discord
 from discord import Intents, Role, TextChannel
 from discord.ext.commands import Bot, Context
+
+
+async def aiter(iterable) -> Any:
+    for i in iterable:
+        yield i
 
 
 class DiscordBot(Bot):
@@ -69,7 +74,7 @@ class DiscordBot(Bot):
         if message.author == self.user:
             return
 
-        async for handler in self.messageHandlers:
+        async for handler in aiter(self.messageHandlers):
             # We cannot be sure that the user's code will not have exceptions.
             # Need to log this information well so that it is easier to research
             # while also trying to make sure the Discord bot does not go down.
@@ -103,7 +108,7 @@ class DiscordBot(Bot):
 
     async def on_member_join(self, member) -> None:
         """Handler broker for member joins."""
-        async for handler in self.memberJoinHandlers:
+        async for handler in aiter(self.memberJoinHandlers):
             try:
                 await handler(member)
             except Exception:
@@ -137,7 +142,7 @@ class DiscordBot(Bot):
 
     async def on_member_ban(self, member) -> None:
         """Handler broker for member banned."""
-        async for handler in self.userBannedHandlers:
+        async for handler in aiter(self.userBannedHandlers):
             try:
                 await handler(member)
             except Exception:
@@ -170,7 +175,7 @@ class DiscordBot(Bot):
         return removed
 
     async def on_reaction_add(self, reaction, user) -> None:
-        async for handler in self.emojiAddHandlers:
+        async for handler in aiter(self.emojiAddHandlers):
             try:
                 await handler(reaction, user)
             except Exception:
@@ -204,7 +209,7 @@ class DiscordBot(Bot):
 
     async def on_message_delete(self, message) -> None:
         """On message delete handler broker"""
-        async for handler in self.messageDeletedHandlers:
+        async for handler in aiter(self.messageDeletedHandlers):
             try:
                 await handler(message)
             except Exception:
@@ -236,7 +241,7 @@ class DiscordBot(Bot):
         return removed
 
     async def on_reaction_remove(self, reaction, user) -> None:
-        async for handler in self.emojiRemoveHandlers:
+        async for handler in aiter(self.emojiRemoveHandlers):
             try:
                 await handler(reaction, user)
             except Exception:
