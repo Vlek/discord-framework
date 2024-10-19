@@ -3,14 +3,31 @@ import os
 
 import discord
 import discord.ext
-from discord import Member, Message, Role, TextChannel
+import discord.utils
+from discord import (
+    Guild,
+    Intents,
+    Member,
+    Message,
+    RawReactionActionEvent,
+    Role,
+    TextChannel,
+)
 from discord.ext import commands
 
 from discord_framework import DiscordBot
 
 
 def test_discordbot():
-    bot = DiscordBot()
+    intents = Intents(
+        guilds=True,
+        members=True,
+        message_content=True,
+        messages=True,
+        reactions=True,
+    )
+
+    bot = DiscordBot(intents)
     logger = logging.getLogger("discord")
     TOKEN = os.getenv("DISCORD_TOKEN") or ""
 

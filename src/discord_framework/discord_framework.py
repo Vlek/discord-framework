@@ -1,14 +1,16 @@
 import logging
-from typing import Callable, Any
+from typing import Callable
 
 import discord
-from discord import Intents, Role, TextChannel
-from discord.ext.commands import Bot, Context
-
-
-async def aiter(iterable) -> Any:
-    for i in iterable:
-        yield i
+from discord import (
+    Guild,
+    Intents,
+    RawMessageDeleteEvent,
+    RawReactionActionEvent,
+    Role,
+)
+from discord.abc import GuildChannel
+from discord.ext.commands import Bot
 
 
 class DiscordBot(Bot):
@@ -74,7 +76,7 @@ class DiscordBot(Bot):
         if message.author == self.user:
             return
 
-        async for handler in aiter(self.messageHandlers):
+        for handler in self.messageHandlers:
             # We cannot be sure that the user's code will not have exceptions.
             # Need to log this information well so that it is easier to research
             # while also trying to make sure the Discord bot does not go down.
@@ -108,7 +110,7 @@ class DiscordBot(Bot):
 
     async def on_member_join(self, member) -> None:
         """Handler broker for member joins."""
-        async for handler in aiter(self.memberJoinHandlers):
+        for handler in self.memberJoinHandlers:
             try:
                 await handler(member)
             except Exception:
@@ -142,7 +144,7 @@ class DiscordBot(Bot):
 
     async def on_member_ban(self, member) -> None:
         """Handler broker for member banned."""
-        async for handler in aiter(self.userBannedHandlers):
+        for handler in self.userBannedHandlers:
             try:
                 await handler(member)
             except Exception:
@@ -174,15 +176,15 @@ class DiscordBot(Bot):
 
         return removed
 
-    async def on_reaction_add(self, reaction, user) -> None:
-        async for handler in aiter(self.emojiAddHandlers):
+    async def on_raw_reaction_add(self, payload: RawReactionActionEvent) -> None:
+        for handler in self.emojiAddHandlers:
             try:
-                await handler(reaction, user)
+                await handler(payload)
             except Exception:
                 logging.exception("")
 
     def emojiAddHandler(self) -> Callable:
-        def decorator(handler: Callable) -> Callable:
+        def decorator(handler: Callable) -> None:
             self.addEmojiAddHandler(handler)
 
         return decorator
@@ -207,11 +209,11 @@ class DiscordBot(Bot):
 
         return removed
 
-    async def on_message_delete(self, message) -> None:
+    async def on_raw_message_delete(self, payload: RawMessageDeleteEvent) -> None:
         """On message delete handler broker"""
-        async for handler in aiter(self.messageDeletedHandlers):
+        for handler in self.messageDeletedHandlers:
             try:
-                await handler(message)
+                await handler(payload)
             except Exception:
                 logging.exception("")
 
@@ -240,10 +242,10 @@ class DiscordBot(Bot):
 
         return removed
 
-    async def on_reaction_remove(self, reaction, user) -> None:
-        async for handler in aiter(self.emojiRemoveHandlers):
+    async def on_raw_reaction_remove(self, payload: RawReactionActionEvent) -> None:
+        for handler in self.emojiRemoveHandlers:
             try:
-                await handler(reaction, user)
+                await handler(payload)
             except Exception:
                 logging.exception("")
 
@@ -253,14 +255,14 @@ class DiscordBot(Bot):
 
         return decorator
 
-    def getChannel(self, channelName: str) -> TextChannel:
-        channel: TextChannel = discord.utils.get(
+    def getChannel(self, channelName: str) -> GuildChannel | None:
+        channel: GuildChannel | None = discord.utils.get(
             self.get_all_channels(), name=channelName
         )
 
         return channel
 
-    def getRole(self, ctx: Context, roleName: str) -> Role:
-        role: Role = discord.utils.get(ctx.guild.roles, name=roleName)
+    def getRole(self, guild: Guild, roleName: str) -> Role | None:
+        role: Role | None = discord.utils.get(guild.roles, name=roleName)
 
         return role
