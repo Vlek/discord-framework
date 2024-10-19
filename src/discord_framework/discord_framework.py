@@ -2,13 +2,7 @@ import logging
 from typing import Callable
 
 import discord
-from discord import (
-    Guild,
-    Intents,
-    RawMessageDeleteEvent,
-    RawReactionActionEvent,
-    Role,
-)
+from discord import Guild, Intents, Message, RawReactionActionEvent, Role
 from discord.abc import GuildChannel
 from discord.ext.commands import Bot
 
@@ -209,11 +203,11 @@ class DiscordBot(Bot):
 
         return removed
 
-    async def on_raw_message_delete(self, payload: RawMessageDeleteEvent) -> None:
+    async def on_message_delete(self, message: Message) -> None:
         """On message delete handler broker"""
         for handler in self.messageDeletedHandlers:
             try:
-                await handler(payload)
+                await handler(message)
             except Exception:
                 logging.exception("")
 
