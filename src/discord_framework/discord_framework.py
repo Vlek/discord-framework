@@ -16,13 +16,7 @@ class DiscordBot(Bot):
         self.userBannedHandlers: list[Callable] = []
         self.emojiAddHandlers: list[Callable] = []
         self.emojiRemoveHandlers: list[Callable] = []
-
-        self.modRoles: list[str] = []
-
-        self.deniedAccessMessages: list[str] = [
-            "Only mods can run that command.",
-            "You do not have access to run that command.",
-        ]
+        self.onReadyHandlers: list[Callable] = []
 
         self.cooldowns: dict[str, int] = {}
 
@@ -33,6 +27,30 @@ class DiscordBot(Bot):
         self.log = logging.getLogger("discord")
 
         super().__init__(command_prefix=command_prefix, intents=intents)
+
+    def addOnReadyHandler(self, handler: Callable) -> bool:
+        """Adds given on_ready handler to handlers."""
+        added: bool = False
+
+        if handler not in self.onReadyHandlers:
+            self.onReadyHandlers.append(handler)
+            added = True
+
+        return added
+
+    def onReadyHandler(self) -> Callable:
+        def decorator(handler: Callable) -> None:
+            self.addOnReadyHandler(handler)
+
+        return decorator
+
+    async def on_ready(self) -> None:
+        """Handler broker for registered on_ready handlers."""
+        for handler in self.onReadyHandlers:
+            try:
+                await handler()
+            except Exception:
+                logging.exception("")
 
     def addMessageHandler(self, handler: Callable) -> bool:
         """Adds given message handler to handlers."""
