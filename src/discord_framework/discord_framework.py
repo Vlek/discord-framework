@@ -17,6 +17,8 @@ class DiscordBot(Bot):
         webserver_host: str = "0.0.0.0",
         webserver_port: int = 8080,
     ) -> None:
+        self.webserver: Apiserver = Apiserver(webserver_host, webserver_port)
+
         self.messageHandlers: list[Callable] = []
         self.messageDeletedHandlers: list[Callable] = []
         self.memberJoinHandlers: list[Callable] = []
@@ -24,7 +26,7 @@ class DiscordBot(Bot):
         self.userBannedHandlers: list[Callable] = []
         self.emojiAddHandlers: list[Callable] = []
         self.emojiRemoveHandlers: list[Callable] = []
-        self.onReadyHandlers: list[Callable] = []
+        self.onReadyHandlers: list[Callable] = [self.webserver.run]
 
         self.cooldowns: dict[str, int] = {}
 
@@ -59,8 +61,6 @@ class DiscordBot(Bot):
                 await handler()
             except Exception:
                 logging.exception("")
-
-        self.webserver: Apiserver = Apiserver(self, "", 0)
 
     def addMessageHandler(self, handler: Callable) -> bool:
         """Adds given message handler to handlers."""
