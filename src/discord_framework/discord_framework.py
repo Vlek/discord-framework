@@ -6,9 +6,17 @@ from discord import Guild, Intents, Message, RawReactionActionEvent, Role
 from discord.abc import GuildChannel
 from discord.ext.commands import Bot
 
+from . import Apiserver
+
 
 class DiscordBot(Bot):
-    def __init__(self, intents=None, command_prefix="$") -> None:
+    def __init__(
+        self,
+        intents=None,
+        command_prefix="$",
+        webserver_host: str = "0.0.0.0",
+        webserver_port: int = 8080,
+    ) -> None:
         self.messageHandlers: list[Callable] = []
         self.messageDeletedHandlers: list[Callable] = []
         self.memberJoinHandlers: list[Callable] = []
@@ -51,6 +59,8 @@ class DiscordBot(Bot):
                 await handler()
             except Exception:
                 logging.exception("")
+
+        self.webserver: Apiserver = Apiserver(self, "", 0)
 
     def addMessageHandler(self, handler: Callable) -> bool:
         """Adds given message handler to handlers."""
