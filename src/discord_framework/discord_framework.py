@@ -67,7 +67,12 @@ class DiscordBot(Bot):
             except Exception:
                 logging.exception("")
 
-        self.webserver: Apiserver = await Apiserver(self, "", 0)
+        try:
+            self.webserver: Apiserver = await Apiserver(
+                self.webserver_host, self.webserver_port
+            )
+        except Exception:
+            logging.exception("")
 
     def addMessageHandler(self, handler: Callable) -> bool:
         """Adds given message handler to handlers."""
