@@ -27,7 +27,7 @@ def test_discordbot():
         reactions=True,
     )
 
-    bot = DiscordBot(intents)
+    bot = DiscordBot(intents, webserver_port=8080)
     logger = logging.getLogger("discord")
     TOKEN = os.getenv("DISCORD_TOKEN") or ""
 
