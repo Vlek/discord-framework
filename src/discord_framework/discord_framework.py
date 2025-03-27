@@ -14,6 +14,7 @@ class DiscordBot(Bot):
         self,
         intents=None,
         command_prefix="$",
+        command_case_insensitive=True,
         webserver_host: str = "0.0.0.0",
         webserver_port: int = 8080,
     ) -> None:
@@ -34,7 +35,11 @@ class DiscordBot(Bot):
 
         self.log = logging.getLogger("discord")
 
-        super().__init__(command_prefix=command_prefix, intents=intents)
+        super().__init__(
+            command_prefix=command_prefix,
+            case_insensitive=command_case_insensitive,
+            intents=intents,
+        )
 
     def addOnReadyHandler(self, handler: Callable) -> bool:
         """Adds given on_ready handler to handlers."""
@@ -60,7 +65,7 @@ class DiscordBot(Bot):
             except Exception:
                 logging.exception("")
 
-        self.webserver: Apiserver = Apiserver(self, "", 0)
+        self.webserver: Apiserver = await Apiserver(self, "", 0)
 
     def addMessageHandler(self, handler: Callable) -> bool:
         """Adds given message handler to handlers."""
