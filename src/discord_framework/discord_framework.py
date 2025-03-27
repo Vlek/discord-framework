@@ -18,7 +18,7 @@ class DiscordBot(Bot):
         webserver_host: str = "0.0.0.0",
         webserver_port: int = 8080,
     ) -> None:
-        self.webserver: Apiserver = Apiserver(webserver_host, webserver_port)
+        self.webserver: Apiserver = await Apiserver(webserver_host, webserver_port)
 
         self.messageHandlers: list[Callable] = []
         self.messageDeletedHandlers: list[Callable] = []
@@ -66,13 +66,6 @@ class DiscordBot(Bot):
                 await handler()
             except Exception:
                 logging.exception("")
-
-        try:
-            self.webserver: Apiserver = await Apiserver(
-                self.webserver_host, self.webserver_port
-            )
-        except Exception:
-            logging.exception("")
 
     def addMessageHandler(self, handler: Callable) -> bool:
         """Adds given message handler to handlers."""
