@@ -6,7 +6,6 @@ from discord.ext import commands, tasks
 
 
 class Apiserver(commands.Cog):
-
     def __init__(self, host: str, port: int) -> None:
         self.app: web.Application = web.Application()
         self.routes: web.RouteTableDef = web.RouteTableDef()
@@ -15,6 +14,8 @@ class Apiserver(commands.Cog):
         "The address the api responds to. e.g. 0.0.0.0"
         self.webserver_port: int = port
         "The port the api is listening on. e.g. 80"
+
+        self.logger = logging.getLogger("discord")
 
         @self.routes.get("/heartbeat")
         async def heartbeat(request) -> web.Response:
@@ -29,6 +30,6 @@ class Apiserver(commands.Cog):
 
         site = web.TCPSite(runner, host=self.webserver_host, port=self.webserver_port)
         await site.start()
-        logging.warning(
+        self.logger.info(
             f"Discord API started on {self.webserver_host}:{self.webserver_port}"
         )

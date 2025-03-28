@@ -18,7 +18,10 @@ class DiscordBot(Bot):
         webserver_host: str = "0.0.0.0",
         webserver_port: int = 8080,
     ) -> None:
-        self.webserver: Apiserver = await Apiserver(webserver_host, webserver_port)
+        self.webserver_host = webserver_host
+        self.webserver_port = webserver_port
+
+        self.webserver = Apiserver(self.webserver_host, self.webserver_port)
 
         self.messageHandlers: list[Callable] = []
         self.messageDeletedHandlers: list[Callable] = []

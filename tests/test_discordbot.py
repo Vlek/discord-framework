@@ -1,15 +1,14 @@
 import logging
 import os
+import pytest
 
 import discord
 import discord.ext
 import discord.utils
 from discord import (
-    Guild,
     Intents,
     Member,
     Message,
-    RawReactionActionEvent,
     Role,
     TextChannel,
 )

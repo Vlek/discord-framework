@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "discord-framework"
-version = "1.13.0"
+version = "1.14.0"
 description = "Framework for creating Discord bots"
 authors = ["Derek 'Vlek' McCammond"]
 readme = "README.md"
@@ -10,6 +10,7 @@ packages = [{ include = "discord_framework", from = "src" }]
 python = "^3.9"
 "discord.py" = "^2.4.0"
 async-timeout = "^4.0.3"
+pytest-asyncio = "^0.26.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
